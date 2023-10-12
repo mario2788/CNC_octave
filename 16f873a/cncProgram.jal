@@ -1,0 +1,84 @@
+-- ------------------------------------------------------
+-- Title: Blink-a-led of the Microchip pic16f873a
+--
+-- Author: Rob Hamerling, Rob Jansen, Copyright (c) 2008..2019 all rights reserved.
+-- Domingo 26 de Abril el 2020
+-- Autor: Mario Cuellar
+-- Control de una máquina CNC
+
+
+--                          display LCD
+
+--                         AREA VISIBLE                                NO VISIBLE
+--________________________________________________________________ _______________
+--|                                                                |               |
+--|00h 01h 02h 03h 04h 05h 06h 07h 08h 09h 0Ah 0Bh 0Ch 0Dh 0Eh 0Fh |   10h-27H     |
+--|                                                                |               |
+--|40h 41h 42h 43h 44h 45h 46h 47h 48h 49h 4Ah 4Bh 4Ch 4Dh 4Eh 4Fh |   50H-67H     |
+--|________________________________________________________________|_______________|
+--                      (16 CARACTERES)                             (24 CARACTERES)
+-- ________________________________________________________________ _______________
+--|                                                                |               |
+--|00d 01d 02d 03d 04d 05d 06d 07d 08d 09d 10d 11d 12d 13d 14d 15d |   10h-27H     |
+--|                                                                |               |
+--|64d 65d 66d 67d 68d 69d 70d 71d 72d 73d 74d 75d 76d 77d 78d 79d |   50H-67H     |
+--|________________________________________________________________|_______________|
+--                      (16 CARACTERES)                             (24 CARACTERES)
+
+--                              ______________________
+--                            -|1(MCLR)        (PGD)28|- RB7 - STEPPER_Z
+--         input analog - RA0 -|2              (PGC)27|- RB6 - STEPPER_Z
+--            STEPPER_Y - RA1 -|3          P        26|- RB5 - STEPPER_Z
+--            STEPPER_Y - RA2 -|4          I        25|- RB4 - STEPPER_Z
+--            STEPPER_Y - RA3 -|5          C        24|- RB3 - STEPPER_X
+--                      - RA4 -|6          1        23|- RB2 - STEPPER_X
+--            STEPPER_Y - RA5 -|7          6        22|- RB1 - STEPPER_X
+--                            -|8 (VSS)    F        21|- RB0 - STEPPER_X
+--                            -|9 (OSC1)   8   (VDD)20|-
+--                            -|10(OSC2)   7   (VSS)19|-
+--         DATA_OUT_LCD - RC0 -|11         3        18|- RC7 - RX (USART)
+--            CLOCK_LCD - RC1 -|12         A        17|- RC6 - TX (USART)
+--           ENABLE_LCD - RC2 -|13                  16|- RC5 -
+--                      - RC3 -|14__________________15|- RC4 -
+
+-- ------------------------------------------------------
+--
+include 16f873a                     -- target PICmicro
+--
+-- This program assumes that a 20 MHz resonator or crystal
+-- is connected to pins OSC1 and OSC2.
+pragma target clock 20_000_000      -- oscillator frequency
+--
+pragma target OSC      HS                        -- crystal or resonator
+pragma target WDT      DISABLED                  -- watchdog
+pragma target DEBUG    DISABLED                  -- no debugging
+pragma target BROWNOUT DISABLED                  -- no brownout reset
+pragma target LVP      DISABLED                  -- no low voltage programming
+
+-- Hacer todos los pines como salida
+enable_digital_io()                 -- make all pins digital I/O
+-- Parametros para LCD
+const byte LCD_ROWS    =  2           -- LCD with 2 lines
+const byte LCD_CHARS   =  16          -- and 16 characters per line
+alias     lcd_en       is pin_C5      -- data trigger
+alias     lcd_rs       is pin_C4      -- command/data select.
+pin_C5_direction       = output
+pin_C4_direction       = output
+--
+alias     lcd_dataport is portB_low
+portB_low_direction    = all_output
+--
+include lcd_hd44780_4
+--
+lcd_init()                            -- init the lcd controller
+--
+include delay                         -- fetch delay library
+--
+forever loop
+   led = ON
+   _usec_delay(100_000)
+   led = OFF
+   _usec_delay(400_000)
+end loop
+
+

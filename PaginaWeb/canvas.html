@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Pruebas de dibujar en objeto canvas</title>
+		
+		<style type="text/css">
+			canvas {
+				border: 2px solid blue;
+			}	
+			#lienzoDos{
+				border: 2px solid red;
+			}
+		</style>
+	</head>
+	<body>  <!--  onload="draw();"> -->
+		<h1>
+			Pruebas sobre canvas.
+		</h1>
+		<div>
+			<canvas id="lienzo" width="200" height="200"><canvas>
+		</div>
+		
+
+		<div>
+			Nueva canvas :
+			<div>
+				<canvas id="lienzoDos" width="300" height="100"><canvas>
+			</div>
+		</div>
+
+		
+		<script type="text/javascript">
+			// Funcion para dibujar
+			function draw(){
+				var canvas = document.getElementById('lienzo') ;
+				var l = canvas.getContext('2d') ;
+
+
+				l.beginPath();
+				l.moveTo(75,50);
+				l.lineTo(100,75);
+				l.lineTo(100,25);
+				l.closePath();
+				l.fill();
+
+				l.beginPath() ;
+				l.moveTo(10,10) ;
+				l.lineTo(10,10) ;
+				l.moveTo(15,15) ;
+				l.lineTo(15,15) ;
+				l.moveTo(20,20) ;
+				l.lineTo(21,20) ;
+				l.closePath();
+				l.stroke();
+
+			}
+			draw();
+
+			function arrayToMatriz(arrayIn , widthIn , heightIn){
+				// el array contiene la informacion de los pixeles 
+				// de una imagen. Comenzando por el pixel de la esquina
+				// izquierda, avanzando de izquierda a derecha y de 
+				// arriba abajo. En el orden : (R, G, B , A), A:gamma.
+				// la funcion debe retornar una matriz con dimension
+				// iguales a la imagen fuente. Cada elemento de la 
+				// matriz es un objeto pixel: {R,G,B,A}
+				function Pixel(r,g,b,a){
+					this.R = r ;
+					this.G = g ;
+					this.B = b ;
+					this.A = a ;
+					this.pixel = function(r,g,b,a){
+						this.R = r ;
+						this.G = g ;
+						this.B = b ;
+						this.A = a ;
+					}
+				}
+
+				// indexadores de la matriz
+				var indexWith = 0;
+				var indexHeigth = 0;
+				// creacion de la matriz:
+				// filas
+				var matrizReturn = new Array(widthIn);
+				// columnas
+				for(var i = 0 ; i <= widthIn - 1 ; i++){
+					matrizReturn[i] = new Array(heightIn) ;
+				}
+
+				for (var indexArray = 0; indexArray <= arrayIn.length-1; indexArray = indexArray + 4) {
+					// se obtiene los valores del pixel
+					r = arrayIn[indexArray + 0] ;
+					g = arrayIn[indexArray + 1] ;
+					b = arrayIn[indexArray + 2] ;
+					a = arrayIn[indexArray + 3] ;
+
+					matrizReturn[indexWith][indexHeigth] = new Pixel(r,g,b,a) ;
+					indexWith++ ;
+					if (indexWith == widthIn ) {
+						indexWith = 0;
+						indexHeigth++ ;
+					}
+				}
+				return matrizReturn 
+			}
+
+
+			function matrizToArray(matrizIn){
+				//  transformacion matriz de objetos a array  
+				var widthMatriz = matrizIn.length ;
+				var heightMatriz = matrizIn[1].length ;
+				var arrayReturn = new Array() ;
+				
+				for(var indexWidth = 0 ; indexWidth <= widthMatriz-1 ; indexWidth++){
+					for(var indexHeigth = 0; indexHeigth <= heightMatriz-1 ; indexHeigth++){
+						
+						arrayReturn.push( matrizIn[indexWidth][indexHeigth].R ) ;
+						arrayReturn.push( matrizIn[indexWidth][indexHeigth].G ) ;
+						arrayReturn.push( matrizIn[indexWidth][indexHeigth].B ) ;
+						arrayReturn.push( matrizIn[indexWidth][indexHeigth].A ) ;
+					}
+				}
+				return arrayReturn 
+			}
+
+			function copiarArray(array1 ,array2){
+				// copia el contenido del array2 en el array1
+				for(var index = 0 ; index <= array1.length ; index++){
+					array1[index] = array2[index] ;
+				}
+			}
+
+			var canvas2 = document.getElementById('lienzoDos');
+			var ctx = canvas2.getContext('2d');
+			var imageData = ctx.createImageData(20, 20);
+
+			// // Iterate through every pixel
+			for (let i = 0; i < imageData.data.length; i += 4) {
+			  // Modify pixel data
+			  imageData.data[i + 0] = 200 ;  // R value
+			  imageData.data[i + 1] = 150 ;  // G value
+			  imageData.data[i + 2] = 100 ;  // B value
+			  imageData.data[i + 3] = 100 ;  // A value
+			}
+			
+			// Obtener matriz de imagen:
+			var matriz = arrayToMatriz( imageData.data, imageData.width, imageData.height ) ;
+
+			matriz[15][10].pixel(255,0,0,255) ;
+			matriz[1][1].pixel(0,0,0,255) ;
+			// Draw image data to the canvas
+			copiarArray( imageData.data , matrizToArray(matriz) ) ;
+			ctx.putImageData(imageData, 20, 10);
+
+
+		</script>
+	</body>
+</html>

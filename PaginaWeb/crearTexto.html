@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> Pruebas de texto</title>
+</head>
+<body>
+	<h1>
+		Carga de texto.
+	</h1>
+	<script type="text/javascript">
+		function WriteFile() {
+		   var fso  = CreateObject("Scripting.FileSystemObject"); 
+		   var fh = fso.CreateTextFile("/home/mario/Documentos/rutinasCNC_octave/Test.txt", true); 
+		   fh.WriteLine(miCadenaDeTexto); 
+		   fh.Close(); 
+		}
+		WriteFile() ;
+	</script>
+</body>
+</html>
