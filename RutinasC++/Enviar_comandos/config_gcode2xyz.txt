@@ -1,0 +1,12 @@
+* Dirección del código G a procesar:
+/home/mario/Lobster_0001.ngc
+* Delta de la máquina en mm  en la dirección horizontal del plano:
+0.094
+* Delta de la máquina en mm  en la dirección vertical del plano:
+0.094
+* Delta de la máquina en mm  en la dirección normal al plano:
+0.029
+* Puerto serial :
+/dev/ttyUSB0
+* Velocidad en baudios:{9600, 19200, 38400, 115200}:
+115200
